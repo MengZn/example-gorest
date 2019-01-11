@@ -48,3 +48,24 @@ func (ex *ExChanger) CreateExChange(request *restful.Request, response *restful.
 		}
 	}
 }
+
+func (ex *ExChanger) DelExChange(request *restful.Request, response *restful.Response) {
+	d := make(chan error)
+	dollar := &Dollar{
+		Name:    request.PathParameter("name"),
+		Action:  Delete,
+		ExMaper: ex.exMaper,
+		ErrChan: d,
+	}
+	ex.pool.Run(dollar)
+	select {
+	case err := <-d:
+		if err != nil {
+			fmt.Printf("Delete %s ERROR %s!!\n", dollar.Name, err)
+			response.WriteHeader(http.StatusOK)
+		} else {
+			fmt.Printf("Delete %s success\n", dollar.Name)
+			response.WriteHeader(http.StatusOK)
+		}
+	}
+}

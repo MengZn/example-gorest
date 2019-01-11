@@ -13,6 +13,7 @@ func main() {
 	resource := server.NewResource("/")
 	exchange := exchange.NewExChanger()
 	resource.AddMethod(server.Post, "", exchange.CreateExChange)
+	resource.AddMethod(server.Delete, "/{name}", exchange.DelExChange)
 
 	apiServerHandler := server.NewAPIServerHandler()
 	apiServerHandler.RegisterResource(resource)
