@@ -35,6 +35,9 @@ func (d *Dollar) Task() {
 	switch d.Action {
 	case Create:
 		d.create()
+	case Delete:
+		d.delete()
+	}
 }
 
 func (d *Dollar) create() {
@@ -44,5 +47,15 @@ func (d *Dollar) create() {
 		d.ErrChan <- nil
 	} else {
 		d.ErrChan <- errors.New("this dollar is alreay exist")
+	}
+}
+
+func (d *Dollar) delete() {
+	_, ok := d.ExMaper.ExMap[d.Name]
+	if !ok {
+		delete(d.ExMaper.ExMap, d.Name)
+		d.ErrChan <- nil
+	} else {
+		d.ErrChan <- errors.New("this dollar is not exist")
 	}
 }
