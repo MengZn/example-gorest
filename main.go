@@ -12,6 +12,11 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 	resource := server.NewResource("/")
 	exchange := exchange.NewExChanger()
+	//Method:POST URL:localhost:8080 HEADERS: Content-Type:application/json
+	//BODY:{
+	//     "name": "test3",
+	//     "value": "100"
+	// }
 	resource.AddMethod(server.Post, "", exchange.CreateExChange)
 	resource.AddMethod(server.Delete, "/{name}", exchange.DelExChange)
 
