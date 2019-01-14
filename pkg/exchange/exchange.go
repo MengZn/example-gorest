@@ -27,42 +27,42 @@ func NewExChanger() *ExChanger {
 }
 
 func (ex *ExChanger) CreateExChange(request *restful.Request, response *restful.Response) {
-	d := make(chan error)
+	responseChan := make(chan *Response)
 	dollar := &Dollar{
-		Name:    request.PathParameter("name"),
-		Value:   request.PathParameter("value"),
-		Action:  Create,
-		ExMaper: ex.exMaper,
-		ErrChan: d,
+		Name:         request.PathParameter("name"),
+		Value:        request.PathParameter("value"),
+		Action:       Create,
+		ExMaper:      ex.exMaper,
+		ResponseChan: responseChan,
 	}
 	request.ReadEntity(dollar)
 	ex.pool.Run(dollar)
 	select {
-	case err := <-d:
-		if err != nil {
-			fmt.Printf("Create %s:%s is ERROR %s!!\n", dollar.Name, dollar.Value, err)
+	case resp := <-responseChan:
+		if resp.Error != nil {
+			fmt.Printf("Create %s:%s is ERROR %s!!\n", dollar.Name, dollar.Value, resp.Error)
 			response.WriteHeader(http.StatusOK)
 		} else {
 			fmt.Printf("Create %s:%s success\n", dollar.Name, dollar.Value)
-			response.WriteEntity(dollar)
 			response.WriteHeader(http.StatusCreated)
 		}
+
 	}
 }
 
 func (ex *ExChanger) DelExChange(request *restful.Request, response *restful.Response) {
-	d := make(chan error)
+	responseChan := make(chan *Response)
 	dollar := &Dollar{
-		Name:    request.PathParameter("name"),
-		Action:  Delete,
-		ExMaper: ex.exMaper,
-		ErrChan: d,
+		Name:         request.PathParameter("name"),
+		Action:       Delete,
+		ExMaper:      ex.exMaper,
+		ResponseChan: responseChan,
 	}
 	ex.pool.Run(dollar)
 	select {
-	case err := <-d:
-		if err != nil {
-			fmt.Printf("Delete %s ERROR %s!!\n", dollar.Name, err)
+	case resp := <-responseChan:
+		if resp.Error != nil {
+			fmt.Printf("Delete %s ERROR %s!!\n", dollar.Name, resp.Error)
 			response.WriteHeader(http.StatusOK)
 		} else {
 			fmt.Printf("Delete %s success\n", dollar.Name)
