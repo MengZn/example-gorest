@@ -43,6 +43,8 @@ func (d *Dollar) Task() {
 		d.create()
 	case Delete:
 		d.delete()
+	case Get:
+		d.get()
 	}
 }
 
@@ -61,6 +63,19 @@ func (d *Dollar) create() {
 	d.ResponseChan <- resp
 }
 
+func (d *Dollar) get() {
+	value, ok := d.ExMaper.ExMap[d.Name]
+	resp := &Response{
+		Name:  d.Name,
+		Value: value,
+		Error: nil,
+	}
+	if !ok {
+		resp.Error = errors.New("this dollar is not exist")
+	}
+	d.ResponseChan <- resp
+}
+
 func (d *Dollar) delete() {
 	_, ok := d.ExMaper.ExMap[d.Name]
 	resp := &Response{
@@ -68,7 +83,7 @@ func (d *Dollar) delete() {
 		Value: d.Value,
 		Error: nil,
 	}
-	if !ok {
+	if ok {
 		delete(d.ExMaper.ExMap, d.Name)
 	} else {
 		resp.Error = errors.New("this dollar is not exist")
