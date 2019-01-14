@@ -7,6 +7,6 @@ USER nobody
 
 EXPOSE 8080
 
-ADD build/_output/bin/gorest /usr/local/bin/gorest
+ADD _output/bin/rest /usr/local/bin/rest
 
 
