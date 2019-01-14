@@ -23,12 +23,18 @@ func NewExMaper() *ExMaper {
 	}
 }
 
+type Response struct {
+	Name  string
+	Value string
+	Error error
+}
+
 type Dollar struct {
-	Name    string
-	Value   string
-	Action  action
-	ExMaper *ExMaper
-	ErrChan chan error
+	Name         string
+	Value        string
+	Action       action
+	ExMaper      *ExMaper
+	ResponseChan chan *Response
 }
 
 func (d *Dollar) Task() {
@@ -42,20 +48,30 @@ func (d *Dollar) Task() {
 
 func (d *Dollar) create() {
 	_, ok := d.ExMaper.ExMap[d.Name]
+	resp := &Response{
+		Name:  d.Name,
+		Value: d.Value,
+		Error: nil,
+	}
 	if !ok {
 		d.ExMaper.ExMap[d.Name] = d.Value
-		d.ErrChan <- nil
 	} else {
-		d.ErrChan <- errors.New("this dollar is alreay exist")
+		resp.Error = errors.New("this dollar is alreay exist")
 	}
+	d.ResponseChan <- resp
 }
 
 func (d *Dollar) delete() {
 	_, ok := d.ExMaper.ExMap[d.Name]
+	resp := &Response{
+		Name:  d.Name,
+		Value: d.Value,
+		Error: nil,
+	}
 	if !ok {
 		delete(d.ExMaper.ExMap, d.Name)
-		d.ErrChan <- nil
 	} else {
-		d.ErrChan <- errors.New("this dollar is not exist")
+		resp.Error = errors.New("this dollar is not exist")
 	}
+	d.ResponseChan <- resp
 }
