@@ -1,18 +1,31 @@
 GOOS:=linux
+REPO := quay.io
+OWNER := mengzn
+APP:=example-gorest
 
+DOCKERFILE:=./build
 
-$(shell mkdir -p build/_output/)
+VERSION:=1.0
 
 .PHONY: dep 
 dep:
 	dep ensure
 
 .PHONY: build
-build: build/_output/
+build: build/_output/bin/rest
 
-build/_output/: 
+build/_output/bin/rest:
+	$(shell mkdir -p build/_output/bin/)
 	GOOS=$(GOOS) go build \
-	  -a -o $@ cmd/main.go
+	  -a -o $@
+
+.PHONY: build_image
+build_image:
+	docker build $(DOCKERFILE) --tag $(REPO)/$(OWNER)/$(APP):$(VERSION)
+
+.PHONY: push_image
+push_image:
+	docker push $(REPO)/$(OWNER)/$(APP):$(VERSION)
 
 clean:
 	rm -rf build/_output/
