@@ -70,3 +70,25 @@ func (ex *ExChanger) DelExChange(request *restful.Request, response *restful.Res
 		}
 	}
 }
+
+func (ex *ExChanger) GetExChange(request *restful.Request, response *restful.Response) {
+	responseChan := make(chan *Response)
+	dollar := &Dollar{
+		Name:         request.PathParameter("name"),
+		Action:       Get,
+		ExMaper:      ex.exMaper,
+		ResponseChan: responseChan,
+	}
+	ex.pool.Run(dollar)
+	select {
+	case resp := <-responseChan:
+		if resp.Error != nil {
+			fmt.Printf("Get %s ERROR %s!!\n", dollar.Name, resp.Error)
+			response.WriteHeader(http.StatusOK)
+		} else {
+			fmt.Printf("Get %s success value is %s \n", dollar.Name, dollar.Value)
+			response.WriteEntity(resp.Value)
+			response.WriteHeader(http.StatusOK)
+		}
+	}
+}

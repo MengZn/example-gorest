@@ -9,7 +9,7 @@ type Resource struct {
 
 func NewWebService(path string) *Resource {
 	ws := new(restful.WebService)
-	ws.Path("/users").
+	ws.Path(path).
 		Consumes(restful.MIME_XML, restful.MIME_JSON).
 		Produces(restful.MIME_JSON, restful.MIME_XML)
 
