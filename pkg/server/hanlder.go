@@ -32,12 +32,12 @@ func NewAPIServerHandler() *APIServerHandler {
 	return &APIServerHandler{
 		GoRestfulContainer: gorestfulContainer,
 		HttpServer: &http.Server{
-			Addr:    ":8080",
+			Addr:    "0.0.0.0:8080",
 			Handler: gorestfulContainer,
 		},
 	}
 }
 func (a *APIServerHandler) ServeHTTP() {
-	log.Print("start listening on localhost:8080")
+	log.Print("start listening on 0.0.0.0:8080")
 	log.Fatal(a.HttpServer.ListenAndServe())
 }
