@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
+	"example-gorest/pkg/utils"
+
 	restful "github.com/emicklei/go-restful"
-	"github.com/go-rest/pkg/utils"
 )
 
 type ExChanger struct {

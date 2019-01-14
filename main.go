@@ -1,16 +1,15 @@
 package main
 
 import (
+	"example-gorest/pkg/exchange"
+	"example-gorest/pkg/server"
 	"math/rand"
 	"time"
-
-	"github.com/go-rest/pkg/exchange"
-	"github.com/go-rest/pkg/server"
 )
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
-	resource := server.NewResource("/")
+	resource := server.NewWebService("/")
 	exchange := exchange.NewExChanger()
 	//Method:POST URL:localhost:8080 HEADERS: Content-Type:application/json
 	//BODY:{
