@@ -20,6 +20,7 @@ func main() {
 	//Method:DELETE URL:localhost:8080/{name} HEADERS: Content-Type:application/json
 	resource.AddMethod(server.Delete, "/{name}", exchange.DelExChange)
 	resource.AddMethod(server.Get, "/{name}", exchange.GetExChange)
+	resource.AddMethod(server.Put, "/{name}", exchange.EditExChange)
 
 	apiServerHandler := server.NewAPIServerHandler()
 	apiServerHandler.RegisterResource(resource)

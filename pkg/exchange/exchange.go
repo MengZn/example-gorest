@@ -92,3 +92,27 @@ func (ex *ExChanger) GetExChange(request *restful.Request, response *restful.Res
 		}
 	}
 }
+
+func (ex *ExChanger) EditExChange(request *restful.Request, response *restful.Response) {
+	responseChan := make(chan *Response)
+	dollar := &Dollar{
+		Name:         request.PathParameter("name"),
+		Action:       Edit,
+		ExMaper:      ex.exMaper,
+		ResponseChan: responseChan,
+	}
+	request.ReadEntity(dollar)
+	ex.pool.Run(dollar)
+	select {
+	case resp := <-responseChan:
+		if resp.Error != nil {
+			fmt.Printf("Get %s ERROR %s!!\n", dollar.Name, resp.Error)
+			response.WriteEntity(resp)
+			response.WriteHeader(http.StatusOK)
+		} else {
+			fmt.Printf("Edit %s success value is %s \n", dollar.Name, dollar.Value)
+			response.WriteEntity(resp)
+			response.WriteHeader(http.StatusOK)
+		}
+	}
+}
