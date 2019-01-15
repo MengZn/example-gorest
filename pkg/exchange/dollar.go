@@ -1,9 +1,5 @@
 package exchange
 
-import (
-	"errors"
-)
-
 type action int
 
 const (
@@ -26,7 +22,7 @@ func NewExMaper() *ExMaper {
 type Response struct {
 	Name  string
 	Value string
-	Error error
+	Error string
 }
 
 type Dollar struct {
@@ -55,12 +51,12 @@ func (d *Dollar) create() {
 	resp := &Response{
 		Name:  d.Name,
 		Value: d.Value,
-		Error: nil,
+		Error: "",
 	}
 	if !ok {
 		d.ExMaper.ExMap[d.Name] = d.Value
 	} else {
-		resp.Error = errors.New("this dollar is alreay exist")
+		resp.Error = "this dollar is alreay exist"
 	}
 	d.ResponseChan <- resp
 }
@@ -70,10 +66,10 @@ func (d *Dollar) get() {
 	resp := &Response{
 		Name:  d.Name,
 		Value: value,
-		Error: nil,
+		Error: "",
 	}
 	if !ok {
-		resp.Error = errors.New("this dollar is not exist")
+		resp.Error = "this dollar is not exist"
 	}
 	d.ResponseChan <- resp
 }
@@ -82,12 +78,12 @@ func (d *Dollar) delete() {
 	resp := &Response{
 		Name:  d.Name,
 		Value: d.Value,
-		Error: nil,
+		Error: "",
 	}
 	if ok {
 		delete(d.ExMaper.ExMap, d.Name)
 	} else {
-		resp.Error = errors.New("this dollar is not exist")
+		resp.Error = "this dollar is not exist"
 	}
 	d.ResponseChan <- resp
 }
@@ -97,12 +93,12 @@ func (d *Dollar) edit() {
 	resp := &Response{
 		Name:  d.Name,
 		Value: d.Value,
-		Error: nil,
+		Error: "",
 	}
 	if ok {
 		d.ExMaper.ExMap[d.Name] = d.Value
 	} else {
-		resp.Error = errors.New("this dollar is not exist")
+		resp.Error = "this dollar is not exist"
 	}
 	d.ResponseChan <- resp
 }
