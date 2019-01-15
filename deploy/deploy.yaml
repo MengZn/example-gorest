@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-rest-deployment
+  labels:
+    app: reset
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rest
+  template:
+    metadata:
+      labels:
+        app: rest
+    spec:
+      containers:
+      - name: reset
+        image: quay.io/mengzn/example-gorest:1.0
+        command:
+          - rest
+        ports:
+        - containerPort: 8080
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: example-go-rest
+spec:
+  selector:
+    app: rest
+  ports:
+  - nodePort: 30192
+    protocol: TCP
+    port: 8080
+    targetPort: 8888
+  type: NodePort
