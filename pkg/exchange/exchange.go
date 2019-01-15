@@ -39,7 +39,7 @@ func (ex *ExChanger) CreateExChange(request *restful.Request, response *restful.
 	ex.pool.Run(dollar)
 	select {
 	case resp := <-responseChan:
-		if resp.Error != nil {
+		if resp.Error != "" {
 			fmt.Printf("Create %s:%s is ERROR %s!!\n", dollar.Name, dollar.Value, resp.Error)
 			response.WriteHeader(http.StatusOK)
 		} else {
@@ -61,7 +61,7 @@ func (ex *ExChanger) DelExChange(request *restful.Request, response *restful.Res
 	ex.pool.Run(dollar)
 	select {
 	case resp := <-responseChan:
-		if resp.Error != nil {
+		if resp.Error != "" {
 			fmt.Printf("Delete %s ERROR %s!!\n", dollar.Name, resp.Error)
 			response.WriteHeader(http.StatusOK)
 		} else {
@@ -82,7 +82,7 @@ func (ex *ExChanger) GetExChange(request *restful.Request, response *restful.Res
 	ex.pool.Run(dollar)
 	select {
 	case resp := <-responseChan:
-		if resp.Error != nil {
+		if resp.Error != "" {
 			fmt.Printf("Get %s ERROR %s!!\n", dollar.Name, resp.Error)
 			response.WriteHeader(http.StatusOK)
 		} else {
@@ -105,7 +105,7 @@ func (ex *ExChanger) EditExChange(request *restful.Request, response *restful.Re
 	ex.pool.Run(dollar)
 	select {
 	case resp := <-responseChan:
-		if resp.Error != nil {
+		if resp.Error != "" {
 			fmt.Printf("Get %s ERROR %s!!\n", dollar.Name, resp.Error)
 			response.WriteEntity(resp)
 			response.WriteHeader(http.StatusOK)
