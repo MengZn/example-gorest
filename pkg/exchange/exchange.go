@@ -10,8 +10,9 @@ import (
 )
 
 type ExChanger struct {
-	exMaper *ExMaper
-	pool    *utils.Pool
+	exMaper  *ExMaper
+	recorder *Recorder
+	pool     *utils.Pool
 }
 
 var maxWorker = 10
@@ -21,8 +22,9 @@ func NewExChanger() *ExChanger {
 	p := utils.NewWorkPool(maxWorker, maxQueue)
 	p.Start()
 	return &ExChanger{
-		exMaper: NewExMaper(),
-		pool:    p,
+		exMaper:  NewExMaper(),
+		recorder: NewRecorder(),
+		pool:     p,
 	}
 }
 
@@ -100,6 +102,7 @@ func (ex *ExChanger) EditExChange(request *restful.Request, response *restful.Re
 		Name:         request.PathParameter("name"),
 		Action:       Edit,
 		ExMaper:      ex.exMaper,
+		Recorder:     ex.recorder,
 		ResponseChan: responseChan,
 	}
 	request.ReadEntity(dollar)
