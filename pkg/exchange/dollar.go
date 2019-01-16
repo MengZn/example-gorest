@@ -1,5 +1,7 @@
 package exchange
 
+import "fmt"
+
 type action int
 
 const (
@@ -30,7 +32,17 @@ type Dollar struct {
 	Value        string
 	Action       action
 	ExMaper      *ExMaper
+	Recorder     *Recorder
 	ResponseChan chan *Response
+}
+type Recorder struct {
+	Recorder []Dollar
+}
+
+func NewRecorder() *Recorder {
+	return &Recorder{
+		Recorder: make([]Dollar, 0),
+	}
 }
 
 func (d *Dollar) Task() {
@@ -90,6 +102,7 @@ func (d *Dollar) delete() {
 
 func (d *Dollar) edit() {
 	_, ok := d.ExMaper.ExMap[d.Name]
+
 	resp := &Response{
 		Name:  d.Name,
 		Value: d.Value,
@@ -97,6 +110,8 @@ func (d *Dollar) edit() {
 	}
 	if ok {
 		d.ExMaper.ExMap[d.Name] = d.Value
+		d.Recorder.Recorder = append(d.Recorder.Recorder, *d)
+		fmt.Println(d.Recorder.Recorder)
 	} else {
 		resp.Error = "this dollar is not exist"
 	}

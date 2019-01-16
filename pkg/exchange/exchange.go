@@ -10,8 +10,9 @@ import (
 )
 
 type ExChanger struct {
-	exMaper *ExMaper
-	pool    *utils.Pool
+	exMaper  *ExMaper
+	recorder *Recorder
+	pool     *utils.Pool
 }
 
 var maxWorker = 10
@@ -21,8 +22,9 @@ func NewExChanger() *ExChanger {
 	p := utils.NewWorkPool(maxWorker, maxQueue)
 	p.Start()
 	return &ExChanger{
-		exMaper: NewExMaper(),
-		pool:    p,
+		exMaper:  NewExMaper(),
+		recorder: NewRecorder(),
+		pool:     p,
 	}
 }
 
@@ -46,7 +48,7 @@ func (ex *ExChanger) CreateExChange(request *restful.Request, response *restful.
 			fmt.Printf("Create %s:%s success\n", dollar.Name, dollar.Value)
 			response.WriteHeader(http.StatusCreated)
 		}
-
+		response.WriteEntity(resp)
 	}
 }
 
@@ -68,6 +70,7 @@ func (ex *ExChanger) DelExChange(request *restful.Request, response *restful.Res
 			fmt.Printf("Delete %s success\n", dollar.Name)
 			response.WriteHeader(http.StatusOK)
 		}
+		response.WriteEntity(resp)
 	}
 }
 
@@ -87,9 +90,9 @@ func (ex *ExChanger) GetExChange(request *restful.Request, response *restful.Res
 			response.WriteHeader(http.StatusOK)
 		} else {
 			fmt.Printf("Get %s success value is %s \n", dollar.Name, dollar.Value)
-			response.WriteEntity(resp.Value)
 			response.WriteHeader(http.StatusOK)
 		}
+		response.WriteEntity(resp)
 	}
 }
 
@@ -99,6 +102,7 @@ func (ex *ExChanger) EditExChange(request *restful.Request, response *restful.Re
 		Name:         request.PathParameter("name"),
 		Action:       Edit,
 		ExMaper:      ex.exMaper,
+		Recorder:     ex.recorder,
 		ResponseChan: responseChan,
 	}
 	request.ReadEntity(dollar)
@@ -107,12 +111,11 @@ func (ex *ExChanger) EditExChange(request *restful.Request, response *restful.Re
 	case resp := <-responseChan:
 		if resp.Error != "" {
 			fmt.Printf("Get %s ERROR %s!!\n", dollar.Name, resp.Error)
-			response.WriteEntity(resp)
 			response.WriteHeader(http.StatusOK)
 		} else {
 			fmt.Printf("Edit %s success value is %s \n", dollar.Name, dollar.Value)
-			response.WriteEntity(resp)
 			response.WriteHeader(http.StatusOK)
 		}
+		response.WriteEntity(resp)
 	}
 }
